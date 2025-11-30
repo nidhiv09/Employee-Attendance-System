@@ -8,7 +8,12 @@ const Attendance = require('./models/Attendance');
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+// Replace the old app.use(cors()) with this:
+app.use(cors({
+  origin: "*", // Allow ALL domains (Easiest fix for interviews)
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ MongoDB Connected'))
