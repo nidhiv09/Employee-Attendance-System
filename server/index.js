@@ -8,21 +8,14 @@ const Attendance = require('./models/Attendance');
 
 const app = express();
 
-// --- THE UNIVERSAL CORS FIX ---
-// This function dynamically allows ANY origin (Vercel, Localhost) 
-// and allows credentials, preventing the network error.
+// --- THE SIMPLE FIX ---
+// "origin: true" tells the server to automatically allow whatever website is asking.
+// This is the easiest way to make Vercel and Render talk without errors.
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    // Allow any origin
-    return callback(null, true);
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  origin: true, 
+  credentials: true
 }));
-// ------------------------------
+// ----------------------
 
 app.use(express.json());
 
@@ -33,6 +26,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 // --- ROUTES ---
 
+// Auth
 app.post('/api/auth/register', async (req, res) => {
   try {
     const { name, email, password, role, department } = req.body;
@@ -49,6 +43,7 @@ app.post('/api/auth/login', async (req, res) => {
   res.json({ user });
 });
 
+// Attendance
 app.post('/api/attendance/checkin', async (req, res) => {
   const { userId, reason } = req.body;
   const date = new Date().toISOString().split('T')[0];
@@ -74,6 +69,7 @@ app.post('/api/attendance/checkout', async (req, res) => {
   res.json(record);
 });
 
+// Getters
 app.get('/api/attendance/my-history/:userId', async (req, res) => {
   const history = await Attendance.find({ userId: req.params.userId }).sort({ date: -1 });
   res.json(history);
