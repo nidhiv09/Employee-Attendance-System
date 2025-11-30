@@ -1,17 +1,27 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import useAttendanceStore from '../store'; // <--- 1. Import Store
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  
+  // 2. Get the 'setUser' action from the store
+  const setUser = useAttendanceStore((state) => state.setUser);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('https://attendance-backend-l6ix.onrender.com/api/auth/login', { email, password });
-      localStorage.setItem('user', JSON.stringify(res.data.user)); 
+      const res = await axios.post('https://attendance-backend-16ix.onrender.com/api/auth/login', { email, password });
+      
+      // Save to Hard Drive
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      
+      // 3. Save to RAM (This fixes your bug!)
+      setUser(res.data.user);
+
       navigate('/dashboard'); 
     } catch (err) {
       alert('Login Failed: ' + (err.response?.data?.error || err.message));
@@ -19,13 +29,14 @@ export default function Login() {
   };
 
   const quickRegister = async () => {
+    /* ... Keep this function exactly as it was ... */
     const name = prompt("Enter Name:");
     if(!name) return;
     const regEmail = prompt("Enter Email:");
     const regPass = prompt("Enter Password:");
     const role = prompt("Role (employee/manager):", "employee");
     try {
-      await axios.post('https://attendance-backend-l6ix.onrender.com/api/auth/register', { name, email: regEmail, password: regPass, role });
+      await axios.post('https://attendance-backend-16ix.onrender.com/api/auth/register', { name, email: regEmail, password: regPass, role });
       alert("User Created! Login now.");
     } catch (err) { alert("Failed"); }
   }
@@ -45,10 +56,12 @@ export default function Login() {
         </form>
 
         <div style={{ marginTop: '20px', textAlign: 'center' }}>
-          <button 
-           onClick={() => navigate('/register')} 
-           style={{ background: 'none', border: 'none', color: 'var(--corporate-green)', cursor: 'pointer', textDecoration: 'underline' }}>
-           Create Account
+          <button onClick={() => navigate('/register')} style={{ background: 'none', border: 'none', color: 'var(--corporate-green)', cursor: 'pointer', textDecoration: 'underline' }}>
+            Create Account
+          </button>
+          <br/><br/>
+          <button onClick={quickRegister} style={{ background: 'none', border: 'none', color: 'gray', fontSize:'0.8rem', cursor: 'pointer' }}>
+            (Quick Test User)
           </button>
         </div>
       </div>

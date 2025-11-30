@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import useAttendanceStore from '../store'; // Zustand Store
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';; // Charts
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'; // Charts
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -10,6 +10,7 @@ export default function Dashboard() {
   // 1. GLOBAL STATE (From Zustand)
   const { 
     user, 
+    setUser, // <--- NEW: Import this to clear state on logout
     stats, 
     history, 
     allAttendance, 
@@ -38,7 +39,7 @@ export default function Dashboard() {
       if (!reason) return alert("Reason is required!");
     }
     try {
-      await axios.post('https://attendance-backend-l6ix.onrender.com/api/attendance/checkin', { userId: user._id, reason });
+      await axios.post('https://attendance-backend-16ix.onrender.com/api/attendance/checkin', { userId: user._id, reason });
       alert('Checked In!');
       fetchEmployeeDashboard(user._id);
     } catch (err) { alert(err.response?.data?.error); }
@@ -46,13 +47,13 @@ export default function Dashboard() {
 
   const handleCheckOut = async () => {
     try {
-      await axios.post('https://attendance-backend-l6ix.onrender.com/api/attendance/checkout', { userId: user._id });
+      await axios.post('https://attendance-backend-16ix.onrender.com/api/attendance/checkout', { userId: user._id });
       alert('Checked Out!');
       fetchEmployeeDashboard(user._id);
     } catch (err) { alert(err.response?.data?.error); }
   };
 
-  // 5. HELPER: Manager Filter Logic (Restored)
+  // 5. HELPER: Manager Filter Logic
   const filteredAttendance = allAttendance.filter(rec => {
     const recDate = new Date(rec.date);
     const start = startDate ? new Date(startDate) : null;
@@ -65,7 +66,7 @@ export default function Dashboard() {
     return matchesName && matchesStart && matchesEnd;
   });
 
-  // 6. HELPER: Export CSV (Restored)
+  // 6. HELPER: Export CSV
   const exportCSV = () => {
     const headers = ["Employee,Date,In,Out,Status,Reason\n"];
     const rows = filteredAttendance.map(row => 
@@ -80,7 +81,7 @@ export default function Dashboard() {
     link.click();
   };
 
-  // 7. HELPER: Render Calendar (Restored)
+  // 7. HELPER: Render Calendar
   const renderCalendar = () => {
     const year = parseInt(selectedMonth.split('-')[0]);
     const month = parseInt(selectedMonth.split('-')[1]) - 1; 
@@ -133,7 +134,18 @@ export default function Dashboard() {
           <h1 style={{ color: 'var(--corporate-green)', margin: 0 }}>Attendance Portal</h1>
           <p style={{ color: 'gray' }}>Welcome, <b>{user.name}</b></p>
         </div>
-        <button className="btn btn-danger" onClick={() => { localStorage.clear(); navigate('/'); }}>Logout</button>
+        
+        {/* LOGOUT BUTTON - UPDATED */}
+        <button 
+          className="btn btn-danger" 
+          onClick={() => { 
+            localStorage.clear(); // Clear Hard Drive
+            setUser(null);        // Clear RAM (Fixes the bug)
+            navigate('/'); 
+          }}
+        >
+          Logout
+        </button>
       </div>
 
       {/* --- MANAGER DASHBOARD --- */}
@@ -147,10 +159,8 @@ export default function Dashboard() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px', marginBottom: '30px' }}>
-            {/* 2. CHARTS SECTION (Weekly Trend + Department Split) */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '30px' }}>
-              
-              {/* Weekly Bar Chart */}
+            {/* 2. CHARTS SECTION */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
               <div className="card">
                 <h3>Weekly Trend</h3>
                 <div style={{ height: '250px', width: '100%' }}>
@@ -165,7 +175,6 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Department Pie Chart  */}
               <div className="card">
                 <h3>Dept. Attendance</h3>
                 <div style={{ height: '250px', width: '100%' }}>
@@ -192,7 +201,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* 3. ABSENT LIST (NEW) */}
+            {/* 3. ABSENT LIST */}
             <div className="card" style={{ background: '#fff1f2', border: '1px solid #fecdd3' }}>
               <h3 style={{ color: '#991b1b' }}>Absent Today 🚨</h3>
               {stats.absentEmployees?.length > 0 ? (
@@ -207,7 +216,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* 4. REPORTS & FILTERS (RESTORED) */}
+          {/* 4. REPORTS & FILTERS */}
           <div className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h3>Reports & Filter</h3>
@@ -257,7 +266,7 @@ export default function Dashboard() {
         </>
       )}
 
-      {/* --- EMPLOYEE DASHBOARD (RESTORED CALENDAR) --- */}
+      {/* --- EMPLOYEE DASHBOARD --- */}
       {user.role === 'employee' && (
         <>
           <div className="card" style={{ textAlign: 'center', marginBottom: '20px' }}>
