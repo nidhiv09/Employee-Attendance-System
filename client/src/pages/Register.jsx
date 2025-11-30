@@ -19,7 +19,7 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/auth/register', formData);
+      await axios.post('https://attendance-backend-l6ix.onrender.com/api/auth/register', formData);
       alert('Registration Successful! Please Login.');
       navigate('/'); // Go back to Login page
     } catch (err) {

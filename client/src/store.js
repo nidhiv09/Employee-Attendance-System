@@ -16,8 +16,8 @@ const useAttendanceStore = create((set) => ({
   fetchManagerDashboard: async () => {
     set({ loading: true });
     try {
-      const statsRes = await axios.get('http://localhost:5000/api/dashboard/manager');
-      const allRes = await axios.get('http://localhost:5000/api/attendance/all');
+      const statsRes = await axios.get('https://attendance-backend-l6ix.onrender.com/api/dashboard/manager');
+      const allRes = await axios.get('https://attendance-backend-l6ix.onrender.com/api/attendance/all');
       set({ stats: statsRes.data, allAttendance: allRes.data, loading: false });
     } catch (err) {
       console.error(err);
@@ -29,7 +29,7 @@ const useAttendanceStore = create((set) => ({
   fetchEmployeeDashboard: async (id) => {
     set({ loading: true });
     try {
-      const histRes = await axios.get(`http://localhost:5000/api/attendance/my-history/${id}`);
+      const histRes = await axios.get(`https://attendance-backend-l6ix.onrender.com/api/attendance/my-history/${id}`);
       set({ history: histRes.data, loading: false });
     } catch (err) {
       console.error(err);

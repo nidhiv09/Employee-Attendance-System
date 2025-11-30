@@ -38,7 +38,7 @@ export default function Dashboard() {
       if (!reason) return alert("Reason is required!");
     }
     try {
-      await axios.post('http://localhost:5000/api/attendance/checkin', { userId: user._id, reason });
+      await axios.post('https://attendance-backend-l6ix.onrender.com/api/attendance/checkin', { userId: user._id, reason });
       alert('Checked In!');
       fetchEmployeeDashboard(user._id);
     } catch (err) { alert(err.response?.data?.error); }
@@ -46,7 +46,7 @@ export default function Dashboard() {
 
   const handleCheckOut = async () => {
     try {
-      await axios.post('http://localhost:5000/api/attendance/checkout', { userId: user._id });
+      await axios.post('https://attendance-backend-l6ix.onrender.com/api/attendance/checkout', { userId: user._id });
       alert('Checked Out!');
       fetchEmployeeDashboard(user._id);
     } catch (err) { alert(err.response?.data?.error); }
