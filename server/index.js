@@ -8,9 +8,21 @@ const Attendance = require('./models/Attendance');
 
 const app = express();
 
-// --- SIMPLE CORS (The version that worked before) ---
-app.use(cors()); 
-// ----------------------------------------------------
+// --- THE UNIVERSAL CORS FIX ---
+// This function dynamically allows ANY origin (Vercel, Localhost) 
+// and allows credentials, preventing the network error.
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    // Allow any origin
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+// ------------------------------
 
 app.use(express.json());
 
