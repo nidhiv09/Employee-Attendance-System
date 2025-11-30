@@ -10,7 +10,7 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('https://attendance-backend-16ix.onrender.com/api/auth/login', { email, password });
+      const res = await axios.post('https://attendance-backend-l6ix.onrender.com/api/auth/login', { email, password });
       localStorage.setItem('user', JSON.stringify(res.data.user)); 
       navigate('/dashboard'); 
     } catch (err) {

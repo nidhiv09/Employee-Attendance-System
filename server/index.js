@@ -8,68 +8,72 @@ const Attendance = require('./models/Attendance');
 
 const app = express();
 
-// --- THE SIMPLE FIX ---
-// "origin: true" tells the server to automatically allow whatever website is asking.
-// This is the easiest way to make Vercel and Render talk without errors.
-app.use(cors({
-  origin: true, 
-  credentials: true
-}));
-// ----------------------
+// --- STANDARD CORS (Allows Vercel to connect) ---
+app.use(cors());
+// ------------------------------------------------
 
 app.use(express.json());
 
-// Database Connection
+// Database Connection (With Safety Check)
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('✅ MongoDB Connected'))
-  .catch(err => console.log('❌ DB Error:', err));
+  .then(() => console.log('✅ MongoDB Connected Successfully'))
+  .catch(err => console.log('❌ DB Connection Error:', err.message));
 
 // --- ROUTES ---
 
-// Auth
 app.post('/api/auth/register', async (req, res) => {
   try {
     const { name, email, password, role, department } = req.body;
     const employeeId = 'EMP' + Math.floor(1000 + Math.random() * 9000); 
     const user = await User.create({ name, email, password, role, employeeId, department });
     res.json(user);
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  } catch (err) { 
+    console.error("Register Error:", err);
+    res.status(500).json({ error: err.message }); 
+  }
 });
 
 app.post('/api/auth/login', async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  if (!user || user.password !== password) return res.status(400).json({ error: 'Invalid credentials' });
-  res.json({ user });
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user || user.password !== password) return res.status(400).json({ error: 'Invalid credentials' });
+    res.json({ user });
+  } catch (err) {
+    console.error("Login Error:", err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// Attendance
 app.post('/api/attendance/checkin', async (req, res) => {
-  const { userId, reason } = req.body;
-  const date = new Date().toISOString().split('T')[0];
-  const existing = await Attendance.findOne({ userId, date });
-  if (existing) return res.status(400).json({ error: 'Already checked in today' });
-  
-  let status = 'Present';
-  if (new Date().getHours() >= 10) status = 'Late';
-  
-  const newRecord = await Attendance.create({ userId, date, checkInTime: new Date(), status, reason: status === 'Late' ? reason : 'On Time' });
-  res.json(newRecord);
+  try {
+    const { userId, reason } = req.body;
+    const date = new Date().toISOString().split('T')[0];
+    const existing = await Attendance.findOne({ userId, date });
+    if (existing) return res.status(400).json({ error: 'Already checked in today' });
+    
+    let status = 'Present';
+    if (new Date().getHours() >= 10) status = 'Late';
+    
+    const newRecord = await Attendance.create({ userId, date, checkInTime: new Date(), status, reason: status === 'Late' ? reason : 'On Time' });
+    res.json(newRecord);
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.post('/api/attendance/checkout', async (req, res) => {
-  const { userId } = req.body;
-  const date = new Date().toISOString().split('T')[0];
-  const record = await Attendance.findOne({ userId, date });
-  if (!record) return res.status(400).json({ error: 'Not checked in' });
-  
-  record.checkOutTime = new Date();
-  record.totalHours = ((record.checkOutTime - record.checkInTime) / (1000 * 60 * 60)).toFixed(2);
-  await record.save();
-  res.json(record);
+  try {
+    const { userId } = req.body;
+    const date = new Date().toISOString().split('T')[0];
+    const record = await Attendance.findOne({ userId, date });
+    if (!record) return res.status(400).json({ error: 'Not checked in' });
+    
+    record.checkOutTime = new Date();
+    record.totalHours = ((record.checkOutTime - record.checkInTime) / (1000 * 60 * 60)).toFixed(2);
+    await record.save();
+    res.json(record);
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Getters
 app.get('/api/attendance/my-history/:userId', async (req, res) => {
   const history = await Attendance.find({ userId: req.params.userId }).sort({ date: -1 });
   res.json(history);
@@ -126,5 +130,8 @@ app.get('/api/attendance/all', async (req, res) => {
   const all = await Attendance.find().populate('userId', 'name employeeId department').sort({ date: -1 });
   res.json(all);
 });
+
+// Root Route (So you don't get "Cannot GET /")
+app.get('/', (req, res) => res.send('API is Running...'));
 
 app.listen(5000, () => console.log('🚀 Server running on port 5000'));
