@@ -1,27 +1,17 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import useAttendanceStore from '../store'; // <--- 1. Import Store
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  
-  // 2. Get the 'setUser' action from the store
-  const setUser = useAttendanceStore((state) => state.setUser);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.post('https://attendance-backend-16ix.onrender.com/api/auth/login', { email, password });
-      
-      // Save to Hard Drive
-      localStorage.setItem('user', JSON.stringify(res.data.user));
-      
-      // 3. Save to RAM (This fixes your bug!)
-      setUser(res.data.user);
-
+      localStorage.setItem('user', JSON.stringify(res.data.user)); 
       navigate('/dashboard'); 
     } catch (err) {
       alert('Login Failed: ' + (err.response?.data?.error || err.message));
@@ -29,7 +19,6 @@ export default function Login() {
   };
 
   const quickRegister = async () => {
-    /* ... Keep this function exactly as it was ... */
     const name = prompt("Enter Name:");
     if(!name) return;
     const regEmail = prompt("Enter Email:");

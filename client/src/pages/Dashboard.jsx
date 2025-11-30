@@ -10,7 +10,6 @@ export default function Dashboard() {
   // 1. GLOBAL STATE (From Zustand)
   const { 
     user, 
-    setUser, // <--- NEW: Import this to clear state on logout
     stats, 
     history, 
     allAttendance, 
@@ -134,18 +133,8 @@ export default function Dashboard() {
           <h1 style={{ color: 'var(--corporate-green)', margin: 0 }}>Attendance Portal</h1>
           <p style={{ color: 'gray' }}>Welcome, <b>{user.name}</b></p>
         </div>
-        
-        {/* LOGOUT BUTTON - UPDATED */}
-        <button 
-          className="btn btn-danger" 
-          onClick={() => { 
-            localStorage.clear(); // Clear Hard Drive
-            setUser(null);        // Clear RAM (Fixes the bug)
-            navigate('/'); 
-          }}
-        >
-          Logout
-        </button>
+        {/* SIMPLE LOGOUT - This causes the refresh bug, but it's stable code */}
+        <button className="btn btn-danger" onClick={() => { localStorage.clear(); navigate('/'); }}>Logout</button>
       </div>
 
       {/* --- MANAGER DASHBOARD --- */}

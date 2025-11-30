@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors'); 
+const cors = require('cors');
 require('dotenv').config();
 
 const User = require('./models/User');
@@ -8,35 +8,9 @@ const Attendance = require('./models/Attendance');
 
 const app = express();
 
-// --- FINAL CORS FIX ---
-app.use((req, res, next) => {
-  // 1. Allow Vercel and Localhost
-  const allowedOrigins = [
-    "http://localhost:5173",
-    "https://employee-attendance-system-eight.vercel.app",
-    "https://employee-attendance-system-hviewdaer-nidhi-vs-projects-ce8e7801.vercel.app" // Your specific link from screenshot
-  ];
-  
-  const origin = req.headers.origin;
-  
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  } else {
-    res.setHeader('Access-Control-Allow-Origin', '*'); // Default to allow all if not matched
-  }
-
-  res.header('Access-Control-Allow-Methods', 'GET, OPTIONS, POST, PUT, DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.header('Access-Control-Allow-Credentials', true);
-
-  // 2. Handle the "Preflight" (The Test Signal)
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200); // Send OK immediately
-  }
-
-  return next();
-});
-// ----------------------
+// --- SIMPLE CORS (The version that worked before) ---
+app.use(cors()); 
+// ----------------------------------------------------
 
 app.use(express.json());
 
