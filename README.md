@@ -1,9 +1,3 @@
-**Name:** Nidhi V  
-**College:** PES Institute of Technology and Management, Shivamogga  
-**Contact Number:** 7975272886  
-
----
-
 # 👔 Employee Attendance Management System
 
 A full-stack MERN application for tracking employee attendance, managing leaves, and generating reports. This system features Role-Based Access Control (RBAC) for Managers and Employees.
