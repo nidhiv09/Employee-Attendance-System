@@ -93,53 +93,6 @@ npm run dev
 ```
 Open your browser and visit: http://localhost:5173
 
----
-
-### 🌱 Seed Data (Quick Setup)
-
-To instantly populate the database with sample users (1 Manager, 2 Employees) and dummy attendance records for the past 5 days:
-
-1.Open the server terminal.
-
-2.Run:
-```bash
-node seed.js
-```
-
-🔐 Login Credentials (After Seeding)
-
-For Manager- Email: manager@test.com, Password: 123
-
-For Employee- Email: alice@test.com, Password: 123
-
----
-
-### Screenshots
-
-1. Splash Screen
-
-<img width="1892" height="895" alt="image" src="https://github.com/user-attachments/assets/7a784c56-b765-4cad-8728-85204f5e4791" />
-
-2. Login Page
-
-<img width="1891" height="890" alt="image" src="https://github.com/user-attachments/assets/3fc12eee-7881-4f77-98a9-a880e43055c2" />
-
-3. New Register Page
-
-<img width="1890" height="890" alt="image" src="https://github.com/user-attachments/assets/f3d4f5c2-47fa-41c4-bf1f-f8cc9d109a78" />
-
-4. Manager Attendance Portal
-
-<img width="1891" height="892" alt="image" src="https://github.com/user-attachments/assets/85636d04-6127-4967-bdf6-c10763d2fb7b" />
-
-<img width="1881" height="889" alt="image" src="https://github.com/user-attachments/assets/0a905e89-31d0-44b9-931d-174a4232c4c3" />
-
-5. Employee Attendance Portal
-
-<img width="1888" height="896" alt="image" src="https://github.com/user-attachments/assets/27bbae04-9b0e-44a0-871f-7c0c0f9fe691" />
-
-<img width="1890" height="720" alt="image" src="https://github.com/user-attachments/assets/29ba8fec-0f8a-4e78-abc2-077225c34771" />
-
 
 
 
